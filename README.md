@@ -5,4 +5,4 @@ Text Mining
 ~~~
 Word Cloud
 ~~~
-Here is code for this [code](https://github.com/anilcs13m/DATA_analytics/blob/master/Unit1_Recitation.R) here is the web presentation for this [here](https://github.com/anilcs13m/DATA_analytics/tree/master/data)
+Here is code for this [code](https://github.com/anilcs13m/Text-Mining/blob/master/word_cloud/TextMining.R) here is the web presentation for this [here](https://http://rpubs.com/anilcs13m/126406)
