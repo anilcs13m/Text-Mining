@@ -1,0 +1,167 @@
+
+#   Word Cloud From Document
+#### Here in this report word cloud creation
+#            Anil Kumar  IIT Madras
+
+
+
+## [[source files available on GitHub](https://github.com/anilcs13m)]]
+
+
+#  PRELIMINARIES
+
+Load the library that are required in the assignment:
+```{r load_packages, cache = FALSE, echo = TRUE, message = FALSE, warning = FALSE, tidy = FALSE}
+library("tm")
+library("SnowballC")
+library("wordcloud")
+
+```
+
+
+## INTRODUCTION
+Here in this report we are going to create a word cloud for a given document, basically in word cloud we show the word with higher frequency with bigger size and the words with lower frequency with smaller size
+
+In this report we are going to generate a word cloud from the __PDF__ document
+
+
+
+
+
+# loading the corpus 
+
+our corpus contain only PDF file so before loading the corpus into memory it require to conver that into the txt file. 
+create a directory name __corpus__ inside this directory create another directory name __pdf__ so full path is like this 
+our __.R__ file and our __corpus__ directory are in the same directory and __pdf__ document is in __corpus/pdf/*.pdf__
+
+
+## path of the all pdf file present in the corpus
+```{r path}
+file_path = file.path(".","corpus","pdf") 
+```
+you can list all the files present in the directory by using the __dir__ function
+```{r file}
+dir(file_path)
+```
+Load the files from the directory and make the corpus, as all of the file present here are __PDF__ file so for that we use reader as readPDF
+```{r corpus}
+myCorpus <-Corpus(DirSource(file_path), readerControl = list(reader = readPDF ))
+```
+let's view our corpus
+```{r view}
+myCorpus[1]
+```
+Now apply some preprocessing to this corpus to create word cloud
+
+
+### Pre-processing steps 
+   
+To deal with text data following pre-processing is required. 
+
+Follow the standard steps to build and pre-process the corpus:
+
+	1) Build a new corpus variable called corpus.
+
+	2) Using tm_map, convert the text to lowercase.
+
+	3) Using tm_map, remove all punctuation from the corpus.
+
+	4) Using tm_map, remove all English stopwords from the corpus.
+
+	5) Using tm_map, stem the words in the corpus.
+
+	6) Build a document term matrix from the corpus, called dtm.
+
+Each operation, like stemming or removing stop words, can be done with one line in R,  
+where we use the `tm_map()` function which takes as
+
+* its first argument the name of a __corpus__ and 
+* as second argument a __function performing the transformation__ that we want to apply to the text.
+
+
+```{r preprocessing}
+toSpace <- content_transformer(function(x, pattern) gsub(pattern, " ", x))
+myCorpus <- tm_map(myCorpus, toSpace, "/|@|\\|")
+```
+
+# conver to lower use tm_map function from the tm package
+```{r lower}
+myCorpus <- tm_map(myCorpus,content_transformer(tolower))
+```
+# remove stop words
+```{r stop}
+myCorpus <- tm_map(myCorpus, removeWords, stopwords("english"))
+```
+## remove some other words
+some of the words which are not present in the stop words list but we are required to remove them because these words no carry any meaning in our document
+```{r other}
+myCorpus <- tm_map(myCorpus, removeWords, c("one","let","set","prove","path","use","case","follow","number"))
+```
+
+## remove punctuation
+```{r punctuation}
+myCorpus <- tm_map(myCorpus, removePunctuation)
+```
+## remove white space
+```{r space}
+myCorpus <- tm_map(myCorpus, stripWhitespace)
+```
+
+## remove number 
+```{r num}
+myCorpus <- tm_map(myCorpus, removeNumbers)
+```
+
+## stemming
+stem the document for stemming the document we are using the __SnowballC__ package from __cran__
+```{r stem}
+myCorpus <-tm_map(myCorpus,stemDocument)
+```
+Now our corpus is ready to apply our algorithm for creating the corpus, we first conver this to document term matrix
+to create document term matrix __R__ provied a function __DocumentTermMatrix__
+
+## DocumentTermMatrix
+```{r dtm}
+myCorpusDTM <- DocumentTermMatrix(myCorpus)
+```
+Let's inspect __DTM__ 
+```{r inspect}
+inspect(myCorpusDTM[1:4,100:106])
+```
+## exploring the document term matrix
+```{r exp}
+findFreqTerms(myCorpusDTM, lowfreq=100)
+```
+find association in data
+```{r ass}
+# findAssocs(myCorpusDTM, "data", corlimit=0.6)
+```
+# Sort the corpus
+```{r sort}
+freq <- sort(colSums(as.matrix(myCorpusDTM)), decreasing=TRUE)
+```
+Now conver __myCorpusDTM__ to the matrix
+```{r mat}
+fmatrixtdm <- as.matrix(myCorpusDTM)
+```
+Write this to __CSV__ file
+```{r write}
+# write.csv(fmatrixtdm,file = "myCorpusDTM.csv")
+```
+
+# WORD CLOUD
+```{r cloud}
+
+wordcloud(names(freq), freq, min.freq=100, colors=brewer.pal(6, "Dark2"))
+
+```
+# one more
+```{r onemore}
+wordcloud(names(freq), freq, scale=c(6,0.7), max.words=150, random.order=FALSE, rot.per=0.35,colors=brewer.pal(8,"Dark2"))
+```
+
+
+
+
+
+
