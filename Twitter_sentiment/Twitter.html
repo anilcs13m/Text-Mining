@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Twitter Sentiment Analysis</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: #990073
+   }
+
+   pre .number {
+     color: #099;
+   }
+
+   pre .comment {
+     color: #998;
+     font-style: italic
+   }
+
+   pre .keyword {
+     color: #900;
+     font-weight: bold
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: #d14;
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h1>Twitter Sentiment Analysis</h1>
+
+<h3>Reproducible notes for Twitter Sentiment Analysis</h3>
+
+<h1>Anil Kumar  IIT Madras</h1>
+
+<h2>[<a href="https://github.com/anilcs13m">source files available on GitHub</a>]]</h2>
+
+<h2><a href="https://in.linkedin.com/in/anilcs13m">[connect on linkedin]</a>]]</h2>
+
+<h1>PRELIMINARIES</h1>
+
+<p>Load the library that are required in the assignment:</p>
+
+<pre><code class="r">library(&quot;tm&quot;)
+library(&quot;SnowballC&quot;)
+
+library(&quot;caTools&quot;)
+library(&quot;rpart&quot;)
+library(&quot;rpart.plot&quot;)
+library(&quot;ROCR&quot;)
+library(&quot;randomForest&quot;)
+</code></pre>
+
+<h2>INTRODUCTION</h2>
+
+<p>We will be trying to understand sentiment of tweets about the company Apple, By using the twitter for better understand public perception, Apple wants to monitor how people feel over time and how
+people receive new announcements. </p>
+
+<p>Our challenge in this lecture is to see if we can correctly classify tweets as being negative,
+positive, or neither about Apple.</p>
+
+<h3>Using <strong>Text</strong> as data</h3>
+
+<p>Using data as a data is a difficult task, as text data is not structured as accoring to the requirement and not well written, use of the symbol and other symbolic representation make text analytics more difficult. so handling text data is a challenging problem.
+So for this field is called Natural Language Processing comes, goal of NLP is to understand and derive meaning from
+human language in a meaning full way so that machine can understand.</p>
+
+<h3>Sentiment Mining - Apple</h3>
+
+<ul>
+<li>Apple is a computer company known for its laptops,phones, tablets, and personal media players</li>
+<li>Large numbers of fans, large number of “haters”</li>
+<li>Apple wants to monitor how people feel about them over time, and how people receive new announcements.</li>
+</ul>
+
+<h1>Challenge:</h1>
+
+<ul>
+<li>Can we correctly classify tweets as being negative, positive, or neither about Apple?</li>
+</ul>
+
+<h3>use of technique to understand the text <strong>bag</strong>of<strong>words</strong></h3>
+
+<p>fully understanding the course is difficult so count the number of time a word appears in the document</p>
+
+<h3>Preprocessing of data</h3>
+
+<p>Text data often has many inconsistencies that will cause algorithms trouble
+like: Apple, apple and aPple in the text data should we consider as a single word, not multiple words as text data is releted with the apple company only. So for this we diffirent preprocessing techniq to over come such problems, related to the text data.</p>
+
+<p>Here are some of the following steps that we will cover presentation:</p>
+
+<ul>
+<li>change all the words in words in lower or upper</li>
+<li>remove punctuation</li>
+<li>remove stop words</li>
+<li>stemming</li>
+</ul>
+
+<h1>Data</h1>
+
+<p>To collect the data needed for this task, we had to perform two steps.</p>
+
+<h4>Collect Twitter data</h4>
+
+<p>The first was to collect data about tweets from the internet.<br/>
+Twitter data is publicly available, and it can be collected it through scraping the website or via the Twitter API.</p>
+
+<p>The <strong>sender</strong> of the tweet <em>might be useful to predict sentiment</em>, but we will ignore it to keep our data anonymized.<br/>
+So we will just be using the text of the tweet.</p>
+
+<h4>Construct the outcome variable</h4>
+
+<p>Then we need to construct the outcome variable for these tweets, which means that we have to label
+them as <strong>positive</strong>, <strong>negative</strong>, or <strong>neutral</strong> sentiment.</p>
+
+<p>We would like to label thousands of tweets, and we know that two people might disagree over the
+correct classification of a tweet.
+To do this efficiently, one option is to use the <em>Amazon Mechanical Turk</em>.</p>
+
+<p>The task that we put on the <em>Amazon Mechanical Turk</em> was to judge the sentiment expressed by the
+following item toward the software company Apple.<br/>
+The items we gave them were tweets that we had collected.
+The workers could pick from the following options as their response: </p>
+
+<ul>
+<li>strongly negative, </li>
+<li>negative,</li>
+<li>neutral,</li>
+<li>positive, and </li>
+<li>strongly positive.</li>
+</ul>
+
+<p>These outcomes were represented as a number on the scale from <strong>-2</strong> to <strong>2</strong>.</p>
+
+<p>Each tweet was labeled by five workers.
+For each tweet, we take the average of the five scores given by the five workers, hence the 
+final scores can range from -2 to 2 in increments of 0.2.</p>
+
+<p>The following graph shows the distribution of the number of tweets classified into each of the
+categories.  We can see here that the majority of tweets were classified as neutral, with a small
+number classified as strongly negative or strongly positive.</p>
+
+<h2>LOADING AND PROCESSING DATA</h2>
+
+<pre><code class="r">tweets &lt;- read.csv(&quot;tweets.csv&quot;, stringsAsFactors = FALSE)
+</code></pre>
+
+<p><strong>Note</strong>: when working on a text data we add <code>stringsAsFactors = FALSE</code>, as an argument.</p>
+
+<p>Explore the structure of our data: </p>
+
+<pre><code class="r">str(tweets)
+</code></pre>
+
+<pre><code>## &#39;data.frame&#39;:    1181 obs. of  2 variables:
+##  $ Tweet: chr  &quot;I have to say, Apple has by far the best customer care service I have ever received! @Apple @AppStore&quot; &quot;iOS 7 is so fricking smooth &amp; beautiful!! #ThanxApple @Apple&quot; &quot;LOVE U @APPLE&quot; &quot;Thank you @apple, loving my new iPhone 5S!!!!!  #apple #iphone5S pic.twitter.com/XmHJCU4pcb&quot; ...
+##  $ Avg  : num  2 2 1.8 1.8 1.8 1.8 1.8 1.6 1.6 1.6 ...
+</code></pre>
+
+<p>We have <strong>1181</strong> observations of <strong>2</strong> variables:</p>
+
+<ul>
+<li><strong>Tweet</strong>: the text of the tweet.</li>
+<li><strong>Avg</strong>: the average sentiment score.</li>
+</ul>
+
+<p>The tweet texts are real tweets that gathered on the internet directed to Apple with a few cleaned up words.</p>
+
+<p>We can view tweets sentiment what is the avg of tweets</p>
+
+<pre><code class="r">hist(tweets$Avg,breaks = 5)
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk hist"/> </p>
+
+<p>We are more interested in being able to detect the tweets with <strong>clear negative</strong> sentiment, so
+let&#39;s define a <strong>new variable</strong> in our data set called <code>Negative</code>.</p>
+
+<ul>
+<li>equal to TRUE if the average sentiment score is <strong>less than or equal to -1</strong> </li>
+<li>equal to FALSE if the average sentiment score is greater than -1.</li>
+</ul>
+
+<pre><code class="r">tweets$Negative &lt;- as.factor(tweets$Avg &lt;= -1)
+</code></pre>
+
+<p>We can see how many tweets are there in the catogory of negative, this can be done with the help of <strong>table</strong></p>
+
+<pre><code class="r">table(tweets$Negative)
+</code></pre>
+
+<pre><code>## 
+## FALSE  TRUE 
+##   999   182
+</code></pre>
+
+<p>Add one more variable for the positive tweets, tweet for that average sentiment score is __grater than of equal to 1</p>
+
+<pre><code class="r">tweets$Positive &lt;- as.factor(tweets$Avg&gt;=1)
+</code></pre>
+
+<p>Now we can see the structure of our dataframe</p>
+
+<pre><code class="r">str(tweets)
+</code></pre>
+
+<pre><code>## &#39;data.frame&#39;:    1181 obs. of  4 variables:
+##  $ Tweet   : chr  &quot;I have to say, Apple has by far the best customer care service I have ever received! @Apple @AppStore&quot; &quot;iOS 7 is so fricking smooth &amp; beautiful!! #ThanxApple @Apple&quot; &quot;LOVE U @APPLE&quot; &quot;Thank you @apple, loving my new iPhone 5S!!!!!  #apple #iphone5S pic.twitter.com/XmHJCU4pcb&quot; ...
+##  $ Avg     : num  2 2 1.8 1.8 1.8 1.8 1.8 1.6 1.6 1.6 ...
+##  $ Negative: Factor w/ 2 levels &quot;FALSE&quot;,&quot;TRUE&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Positive: Factor w/ 2 levels &quot;FALSE&quot;,&quot;TRUE&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+</code></pre>
+
+<h1>frequency of positive tweets</h1>
+
+<pre><code class="r">table(tweets$Positive)
+</code></pre>
+
+<pre><code>## 
+## FALSE  TRUE 
+##  1120    61
+</code></pre>
+
+<h2>CREATING A CORPUS</h2>
+
+<p>One of fundamental concepts in text analysis, implemented in the package <code>tm</code> as well, 
+is that of a <strong>corpus</strong>.<br/>
+A <strong>corpus is a collection of documents</strong>.</p>
+
+<p>We will need to convert our tweets to a corpus for pre-processing. 
+Various function in the <code>tm</code> package can be used to create a corpus in many different ways.<br/>
+We will create it from the <code>tweet</code> column of our data frame using two functions, <code>Corpus()</code> and <code>VectorSource()</code>.
+We feed to this latter the <code>Tweets</code> <em>variable</em> of the <code>tweets</code> <em>data frame</em>.</p>
+
+<pre><code class="r">corpus &lt;- Corpus(VectorSource(tweets$Tweet))
+</code></pre>
+
+<p>Let&#39;s check out our corpus:</p>
+
+<pre><code class="r">corpus
+</code></pre>
+
+<pre><code>## &lt;&lt;VCorpus&gt;&gt;
+## Metadata:  corpus specific: 0, document level (indexed): 0
+## Content:  documents: 1181
+</code></pre>
+
+<p>We can check that the documents match our tweets by using double brackets <code>[[</code>.<br/>
+To inspect the first tweet in our corpus, we select the first element as: </p>
+
+<pre><code class="r">corpus[[1]]
+</code></pre>
+
+<pre><code>## &lt;&lt;PlainTextDocument&gt;&gt;
+## Metadata:  7
+## Content:  chars: 101
+</code></pre>
+
+<h3>Pre-processing steps</h3>
+
+<p>To deal with text data following pre-processing is required. </p>
+
+<p>Follow the standard steps to build and pre-process the corpus:</p>
+
+<pre><code>1) Build a new corpus variable called corpus.
+
+2) Using tm_map, convert the text to lowercase.
+
+3) Using tm_map, remove all punctuation from the corpus.
+
+4) Using tm_map, remove all English stopwords from the corpus.
+
+5) Using tm_map, stem the words in the corpus.
+
+6) Build a document term matrix from the corpus, called dtm.
+</code></pre>
+
+<p>Each operation, like stemming or removing stop words, can be done with one line in R,<br/>
+where we use the <code>tm_map()</code> function which takes as</p>
+
+<ul>
+<li>its first argument the name of a <strong>corpus</strong> and </li>
+<li>as second argument a <strong>function performing the transformation</strong> that we want to apply to the text.</li>
+</ul>
+
+<p>First step is to transform all text <em>to lower case</em>:</p>
+
+<pre><code class="r">corpus &lt;- tm_map(corpus, tolower)
+</code></pre>
+
+<p>After performing the first step we can check the same &ldquo;documents&rdquo; as before:
+and we can see that there is no word present in the tweet having upper case character:</p>
+
+<pre><code class="r">corpus[[1]]
+</code></pre>
+
+<pre><code>## [1] &quot;i have to say, apple has by far the best customer care service i have ever received! @apple @appstore&quot;
+</code></pre>
+
+<h3>Plain Text Document</h3>
+
+<p>converts corpus to a Plain Text Document</p>
+
+<pre><code class="r">corpus &lt;- tm_map(corpus, PlainTextDocument)
+</code></pre>
+
+<h3>Removing punctuation</h3>
+
+<pre><code class="r">corpus &lt;- tm_map(corpus, removePunctuation)
+</code></pre>
+
+<h3>Stop Words</h3>
+
+<p>Look at stop words </p>
+
+<pre><code class="r">stopwords(&quot;english&quot;)[1:10]
+</code></pre>
+
+<pre><code>##  [1] &quot;i&quot;         &quot;me&quot;        &quot;my&quot;        &quot;myself&quot;    &quot;we&quot;       
+##  [6] &quot;our&quot;       &quot;ours&quot;      &quot;ourselves&quot; &quot;you&quot;       &quot;your&quot;
+</code></pre>
+
+<p>Stop words are the words that having no meaning or very less meaning in the corpus, 
+so we remove those words which caring less meaning for our corpus</p>
+
+<h3>Removing <em>stop words</em> (and <em>apple</em>)</h3>
+
+<p>Removing words can be done with the <code>removeWords</code> argument to the <code>tm_map()</code> function, with an
+extra argument, <em>i.e.</em> what the stop words are that we want to remove.  </p>
+
+<p>We will remove all of these English stop words, but we will also remove the word &ldquo;<em>apple</em>&rdquo;
+since all of these tweets have the word &ldquo;<em>apple</em>&rdquo; and it probably won&#39;t be very useful in our
+prediction problem.</p>
+
+<pre><code class="r">corpus &lt;- tm_map(corpus, removeWords, c(&quot;apple&quot;, stopwords(&quot;english&quot;)))
+</code></pre>
+
+<p>Now check out our corpus</p>
+
+<pre><code class="r">corpus[[1]]
+</code></pre>
+
+<pre><code>## &lt;&lt;PlainTextDocument&gt;&gt;
+## Metadata:  7
+## Content:  chars: 67
+</code></pre>
+
+<h3>Stemming</h3>
+
+<p>Lastly, we want to stem our document with the <code>stemDocument</code> argument.</p>
+
+<pre><code class="r">corpus &lt;- tm_map(corpus, stemDocument)
+</code></pre>
+
+<pre><code class="r">corpus[[1]]
+</code></pre>
+
+<pre><code>## &lt;&lt;PlainTextDocument&gt;&gt;
+## Metadata:  7
+## Content:  chars: 61
+</code></pre>
+
+<p>We can see that this took off the ending of &ldquo;customer,&rdquo; &ldquo;service,&rdquo; &ldquo;received,&rdquo; and &ldquo;appstore.&rdquo;</p>
+
+<h2>BAG OF WORDS IN R</h2>
+
+<h3>Create a <em>Document Term Matrix</em></h3>
+
+<p>We are now ready to extract the <strong>word frequencies</strong> to be used in our prediction problem.
+The <code>tm</code> package provides a function called <code>DocumentTermMatrix()</code> that generates a <strong>matrix</strong> where:</p>
+
+<ul>
+<li>the <strong>rows</strong> correspond to <strong>documents</strong>, in our case tweets, and </li>
+<li>the <strong>columns</strong> correspond to <strong>words</strong> in those tweets.</li>
+</ul>
+
+<p>The values in the matrix are the number of times that word appears in each document.</p>
+
+<pre><code class="r">DTM &lt;- DocumentTermMatrix(corpus)
+</code></pre>
+
+<pre><code class="r">DTM
+</code></pre>
+
+<pre><code>## &lt;&lt;DocumentTermMatrix (documents: 1181, terms: 3289)&gt;&gt;
+## Non-/sparse entries: 8980/3875329
+## Sparsity           : 100%
+## Maximal term length: 115
+## Weighting          : term frequency (tf)
+</code></pre>
+
+<p>We see that in the corpus there are <strong>3289</strong> <strong>unique words</strong>.</p>
+
+<p>Let&#39;s see what this matrix looks like using the <code>inspect()</code> function, in particular
+slicing a block of rows/columns from the <em>Document Term Matrix</em> by calling by their indices:</p>
+
+<pre><code class="r">inspect(DTM[1000:1005, 505:515])
+</code></pre>
+
+<pre><code>## &lt;&lt;DocumentTermMatrix (documents: 6, terms: 11)&gt;&gt;
+## Non-/sparse entries: 1/65
+## Sparsity           : 98%
+## Maximal term length: 9
+## Weighting          : term frequency (tf)
+## 
+##               Terms
+## Docs           cheapen cheaper check cheep cheer cheerio cherylcol chief
+##   character(0)       0       0     0     0     0       0         0     0
+##   character(0)       0       0     0     0     0       0         0     0
+##   character(0)       0       0     0     0     0       0         0     0
+##   character(0)       0       0     0     0     0       0         0     0
+##   character(0)       0       0     0     0     0       0         0     0
+##   character(0)       0       0     0     0     1       0         0     0
+##               Terms
+## Docs           chiiiiqu child children
+##   character(0)        0     0        0
+##   character(0)        0     0        0
+##   character(0)        0     0        0
+##   character(0)        0     0        0
+##   character(0)        0     0        0
+##   character(0)        0     0        0
+</code></pre>
+
+<p>In this range we see that the word &ldquo;cheer&rdquo; appears in the tweet 1005, but &ldquo;cheap&rdquo; does not appear
+in any of these tweets.
+This <strong>data</strong> is what we call <strong>sparse</strong>.  This means that there are many zeros in our matrix.</p>
+
+<p>We can look at what the most popular terms are, or words, with the function <code>findFreqTerms()</code>, 
+selecting a minimum number of 20 occurrences over the whole corpus:</p>
+
+<pre><code class="r">freq &lt;- findFreqTerms(DTM, lowfreq = 20)
+
+freq 
+</code></pre>
+
+<pre><code>##  [1] &quot;android&quot;              &quot;anyon&quot;                &quot;app&quot;                 
+##  [4] &quot;appl&quot;                 &quot;back&quot;                 &quot;batteri&quot;             
+##  [7] &quot;better&quot;               &quot;buy&quot;                  &quot;can&quot;                 
+## [10] &quot;cant&quot;                 &quot;come&quot;                 &quot;dont&quot;                
+## [13] &quot;fingerprint&quot;          &quot;freak&quot;                &quot;get&quot;                 
+## [16] &quot;googl&quot;                &quot;ios7&quot;                 &quot;ipad&quot;                
+## [19] &quot;iphon&quot;                &quot;iphone5&quot;              &quot;iphone5c&quot;            
+## [22] &quot;ipod&quot;                 &quot;ipodplayerpromo&quot;      &quot;itun&quot;                
+## [25] &quot;just&quot;                 &quot;like&quot;                 &quot;lol&quot;                 
+## [28] &quot;look&quot;                 &quot;love&quot;                 &quot;make&quot;                
+## [31] &quot;market&quot;               &quot;microsoft&quot;            &quot;need&quot;                
+## [34] &quot;new&quot;                  &quot;now&quot;                  &quot;one&quot;                 
+## [37] &quot;phone&quot;                &quot;pleas&quot;                &quot;promo&quot;               
+## [40] &quot;promoipodplayerpromo&quot; &quot;realli&quot;               &quot;releas&quot;              
+## [43] &quot;samsung&quot;              &quot;say&quot;                  &quot;store&quot;               
+## [46] &quot;thank&quot;                &quot;think&quot;                &quot;time&quot;                
+## [49] &quot;twitter&quot;              &quot;updat&quot;                &quot;use&quot;                 
+## [52] &quot;via&quot;                  &quot;want&quot;                 &quot;well&quot;                
+## [55] &quot;will&quot;                 &quot;work&quot;
+</code></pre>
+
+<p>Out of the <strong>3289</strong> words in our matrix, only <strong>56</strong> words
+appear at least 20 times in our tweets.</p>
+
+<p>This means that we probably have a lot of terms that will be pretty useless for our prediction model.
+The number of terms is an issue for two main reasons:</p>
+
+<ul>
+<li>One is <strong>computational</strong>: more terms means more independent variables, which usually means it takes
+longer to build our models.</li>
+<li>The other is that in building models the ratio of independent variables to observations will
+affect how well the <strong>model will generalize</strong>. so remove those words which are present less.</li>
+</ul>
+
+<h3>Remove sparse terms</h3>
+
+<p>Therefore let&#39;s remove some terms that don&#39;t appear very often. </p>
+
+<pre><code class="r">sparse_DTM &lt;- removeSparseTerms(DTM, 0.995)
+</code></pre>
+
+<p>This function takes a second parameters, the <strong>sparsity threshold</strong>.
+The sparsity threshold works as follows.</p>
+
+<ul>
+<li>If we say 0.98, this means to only keep terms that appear in 2% or more of the tweets.</li>
+<li>If we say 0.99, that means to only keep terms that appear in 1% or more of the tweets.</li>
+<li>If we say 0.995, that means to only keep terms that appear in 0.5% or more of the tweets, 
+about six or more tweets.</li>
+</ul>
+
+<p>Let&#39;s see what the new <em>Document Term Matrix</em> properties look like:</p>
+
+<pre><code class="r">sparse_DTM
+</code></pre>
+
+<pre><code>## &lt;&lt;DocumentTermMatrix (documents: 1181, terms: 309)&gt;&gt;
+## Non-/sparse entries: 4669/360260
+## Sparsity           : 99%
+## Maximal term length: 20
+## Weighting          : term frequency (tf)
+</code></pre>
+
+<p>It only contains <strong>309</strong> unique terms, <em>i.e.</em> only about 
+<strong>9.4%</strong> of the full set.</p>
+
+<h3>Convert the DTM to a data frame</h3>
+
+<p>Now let&#39;s convert the sparse matrix into a data frame that we will be able to use for our
+predictive models.</p>
+
+<pre><code class="r">tweetsSparse &lt;- as.data.frame(as.matrix(sparse_DTM))
+</code></pre>
+
+<h4>Fix variables names in the data frame</h4>
+
+<p>Since R struggles with variable names that start with a number, and we probably have some words
+here that start with a number, we should run the <code>make.names()</code> function to make sure all of our
+words are appropriate variable names.
+It will convert the variable names to make sure they are all appropriate names for R before we
+build our predictive models.
+You should do this each time you build a data frame using text analytics.</p>
+
+<p>To make all variable names <em>R-friendly</em> use:</p>
+
+<pre><code class="r">colnames(tweetsSparse) &lt;- make.names(colnames(tweetsSparse))
+</code></pre>
+
+<h3>Add the <em>dependent</em> variable</h3>
+
+<p>We should add back to this data frame our dependent variable to this data set.
+We&#39;ll call it <code>tweetsSparse$Negative</code> for the <strong>Negative</strong> variable and <code>tweetsSparse$Positive</code> for the positive variable, these variables are set from the original <code>Negative</code> variable and <code>Positive</code> variable from
+the tweets data frame.
+Add Negative variable</p>
+
+<pre><code class="r">tweetsSparse$Negative &lt;- tweets$Negative
+</code></pre>
+
+<p>Add Positive Variable</p>
+
+<pre><code class="r">tweetsSparse$Positive &lt;- tweets$Positive
+</code></pre>
+
+<p>Now our data is ready for analysis, now build <strong>Machine Learning</strong> system.</p>
+
+<h1>BUILDING MACHINE LEARNING MODEL</h1>
+
+<p>Before Building the machine learning model, we need to split our data in training and training dataset</p>
+
+<h3>Split data in training/testing sets</h3>
+
+<p>Lastly, let&#39;s split our data into a training set and a testing set, putting <strong>70%</strong> of the data in
+the <strong>training</strong> set.
+Before doing so, we need to set seed, some value so that, we all will get the same result
+Split data based on the <strong>Negative</strong> variable </p>
+
+<pre><code class="r">set.seed(123)
+
+splitNegative &lt;- sample.split(tweetsSparse$Negative, SplitRatio = 0.7)
+
+trainSparseNegative &lt;- subset(tweetsSparse, splitNegative == TRUE)
+testSparseNegative &lt;- subset(tweetsSparse, splitNegative == FALSE)
+</code></pre>
+
+<p>Split data based on the <strong>positive</strong> variable</p>
+
+<pre><code class="r">splitPositive &lt;- sample.split(tweetsSparse$Negative, SplitRatio = 0.7)
+
+trainSparsePositive &lt;- subset(tweetsSparse, splitPositive == TRUE)
+testSparsePositive &lt;- subset(tweetsSparse, splitPositive == FALSE)
+</code></pre>
+
+<h2>PREDICTING SENTIMENT</h2>
+
+<p>In this prediction, we are using both the data for positive and negative, training and testing and we are we are going to 
+different machine learning model to train on these data set.</p>
+
+<p>So, Let&#39;s first use <strong>CART</strong> to build a predictive model, using the <code>rpart()</code> function to predict
+<code>Negative</code> using all of the other variables as our independent variables and the data set <code>trainSparseNegative</code>.</p>
+
+<p>We&#39;ll add one more argument here, which is <code>method = &quot;class&quot;</code> so that the <code>rpart()</code> function knows
+to build a classification model.
+We keep default settings for all other parameters, in particular we are not adding anything for
+<code>minbucket</code> or <code>cp</code>.</p>
+
+<pre><code class="r">tweetCARTNegative &lt;- rpart(Negative ~ . , data = trainSparseNegative, method = &quot;class&quot;)
+</code></pre>
+
+<h1>Plot CART for tweetCARTNegative model</h1>
+
+<pre><code class="r">prp(tweetCARTNegative)
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk model_CART-plot"/> </p>
+
+<p>The tree says that</p>
+
+<ul>
+<li>if the word <em>&ldquo;freak&rdquo;</em> is in the tweet, then predict <code>TRUE</code>, or <strong>negative</strong> sentiment.</li>
+<li>If the word <em>&ldquo;freak&rdquo;</em> is not in the tweet, but the word <em>&ldquo;hate&rdquo;</em> is again predict <code>TRUE</code>.</li>
+<li>If neither of these two words are in the tweet, but the word <em>&ldquo;wtf&rdquo;</em> is, also predict <code>TRUE</code>, 
+or <strong>negative</strong> sentiment.</li>
+<li>If <strong>none of these three words</strong> are in the tweet, then predict <code>FALSE</code>, or <strong>non-negative</strong> sentiment.</li>
+</ul>
+
+<p>This tree makes sense intuitively since these three words are generally seen as negative words.</p>
+
+<p>Now, Let&#39;s build one more model use <strong>CART</strong> to for prediction, using the <code>rpart()</code> function to predict
+<code>Positive</code> using all of the other variables as our independent variables and the data set <code>trainSparsePositive</code>.</p>
+
+<p>We&#39;ll add one more argument here, which is <code>method = &quot;class&quot;</code> so that the <code>rpart()</code> function knows
+to build a classification model.
+We keep default settings for all other parameters, in particular we are not adding anything for
+<code>minbucket</code> or <code>cp</code>.</p>
+
+<pre><code class="r">tweetCARTPositive &lt;- rpart(Positive ~ . , data = trainSparsePositive, method = &quot;class&quot;)
+</code></pre>
+
+<p>Now we have two model ready, one for positive sentiment and one for negative sentiment</p>
+
+<h3>Out-of-Sample performance of the model</h3>
+
+<p>Using the <code>predict()</code> function we compute the predictions of our model <code>tweetCARTNegative</code> and <code>tweetCARTPositive</code> on the new data
+set <code>testSparsePositive</code> and <code>testSparseNegative</code>.
+Be careful to add the argument <code>type = &quot;class&quot;</code> to make sure we get class predictions.</p>
+
+<p>Prediction for the <strong>negative</strong> sentiment:</p>
+
+<pre><code class="r">predictCARTNegative &lt;- predict(tweetCARTNegative, newdata = testSparseNegative, type = &quot;class&quot;)
+</code></pre>
+
+<p>Prediction for the <strong>positive</strong> sentiment:</p>
+
+<pre><code class="r">predictCARTPositive &lt;- predict(tweetCARTPositive, newdata = testSparsePositive, type = &quot;class&quot;)
+</code></pre>
+
+<p>Now, Evalute our model accuracy using different approaches like <strong>confusion matrix</strong> and <strong>AUC</strong>
+So for our prediction let&#39;s compute the confusion matrix:</p>
+
+<pre><code class="r">cmat_CARTNegative &lt;- table(testSparseNegative$Negative, predictCARTNegative)
+cmat_CARTNegative 
+</code></pre>
+
+<pre><code>##        predictCARTNegative
+##         FALSE TRUE
+##   FALSE   294    6
+##   TRUE     37   18
+</code></pre>
+
+<pre><code class="r">accu_CART &lt;- (cmat_CARTNegative[1,1] + cmat_CARTNegative[2,2])/sum(cmat_CARTNegative)
+</code></pre>
+
+<h1>Overall Accuracy for negative sentiment</h1>
+
+<ul>
+<li>Overall Accuracy = <strong>0.8789</strong><br/>
+Sensitivity = 18 / 55 = <strong>0.3273</strong> ( = TP rate)<br/>
+Specificity = 294 / 300 = <strong>0.98</strong><br/>
+FP rate = 6 / 300 = <strong>0.02</strong></li>
+</ul>
+
+<p>Compute the confusion matrix for the positve:</p>
+
+<pre><code class="r">cmat_CARTPositive &lt;- table(testSparsePositive$Positive, predictCARTPositive)
+cmat_CARTPositive
+</code></pre>
+
+<pre><code>##        predictCARTPositive
+##         FALSE TRUE
+##   FALSE   335    0
+##   TRUE     20    0
+</code></pre>
+
+<pre><code class="r">accu_CARTP &lt;- (cmat_CARTPositive[1,1] + cmat_CARTPositive[2,2])/sum(cmat_CARTPositive)
+</code></pre>
+
+<h1>Overall Accuracy for the posistive sentiment</h1>
+
+<ul>
+<li>Overall Accuracy For Positive = <strong>0.9437</strong><br/>
+Sensitivity = 0 / 20 = <strong>0</strong> ( = TP rate)<br/>
+Specificity = 335 / 335 = <strong>1</strong><br/>
+FP rate = 0 / 335 = <strong>0</strong></li>
+</ul>
+
+<h1>BASELINE MODEL</h1>
+
+<h4>Comparison with the <em>baseline model</em></h4>
+
+<p>Let&#39;s compare this to a simple baseline model that <strong>always predicts non-negative</strong> (<em>i.e.</em> the
+most common value of the dependent variable).</p>
+
+<p>To compute the accuracy of the baseline model, let&#39;s make a table of just the outcome variable Negative.</p>
+
+<pre><code class="r">cmat_baseline &lt;- table(testSparseNegative$Negative)
+cmat_baseline
+</code></pre>
+
+<pre><code>## 
+## FALSE  TRUE 
+##   300    55
+</code></pre>
+
+<pre><code class="r">accu_baseline &lt;- max(cmat_baseline)/sum(cmat_baseline)
+</code></pre>
+
+<p>To compute the accuracy of the baseline model, let&#39;s make a table of just the outcome variable Positive.</p>
+
+<pre><code class="r">cmat_baselineP &lt;- table(testSparsePositive$Positive)
+cmat_baselineP
+</code></pre>
+
+<pre><code>## 
+## FALSE  TRUE 
+##   335    20
+</code></pre>
+
+<pre><code class="r">accu_baselineP &lt;- max(cmat_baselineP)/sum(cmat_baselineP)
+</code></pre>
+
+<p>The accuracy of the baseline model is then <strong>0.8451</strong>, for <strong>negative</strong> and <strong>0.9437</strong>,  for positive<br/>
+So the <strong>CART model doing better</strong> than the simple baseline model for both the cases.</p>
+
+<h1>RANDOM FOREST</h1>
+
+<h4>Comparison with a <em>Random Forest</em> model</h4>
+
+<p>So, now we are going to build a new model called <strong>Random Forest</strong> model for both negative and positive dataset.</p>
+
+<p>We use the <code>randomForest()</code> function to predict <code>Negative</code> and <code>Positive</code> again <strong>using all of our other variables</strong> 
+as independent variables and the data set <code>trainSparsePositive</code> and <code>trainSparseNegative</code>.</p>
+
+<p>For this model also we are using the default parameter settings:
+random forest for the negative sentiment</p>
+
+<pre><code class="r">set.seed(123)
+tweetRFN &lt;- randomForest(Negative ~ . , data = trainSparseNegative)
+
+tweetRFN
+</code></pre>
+
+<pre><code>## 
+## Call:
+##  randomForest(formula = Negative ~ ., data = trainSparseNegative) 
+##                Type of random forest: classification
+##                      Number of trees: 500
+## No. of variables tried at each split: 17
+## 
+##         OOB estimate of  error rate: 10.46%
+## Confusion matrix:
+##       FALSE TRUE class.error
+## FALSE   686   17  0.02418208
+## TRUE     70   59  0.54263566
+</code></pre>
+
+<p>random forest for positive sentiment</p>
+
+<pre><code class="r">set.seed(123)
+tweetRFP &lt;- randomForest(Positive ~ . , data = trainSparsePositive)
+
+tweetRFP
+</code></pre>
+
+<pre><code>## 
+## Call:
+##  randomForest(formula = Positive ~ ., data = trainSparsePositive) 
+##                Type of random forest: classification
+##                      Number of trees: 500
+## No. of variables tried at each split: 17
+## 
+##         OOB estimate of  error rate: 6.37%
+## Confusion matrix:
+##       FALSE TRUE class.error
+## FALSE   779    1 0.001282051
+## TRUE     52    0 1.000000000
+</code></pre>
+
+<h1>ACCURACY</h1>
+
+<p>And then compute the Out-of-Sample predictions for negative:</p>
+
+<pre><code class="r">predictRFN &lt;- predict(tweetRFN, newdata = testSparseNegative)
+</code></pre>
+
+<p>And then compute the Out-of-Sample predictions for positive:</p>
+
+<pre><code class="r">predictRFP &lt;- predict(tweetRFP, newdata = testSparsePositive)
+</code></pre>
+
+<p>for calculating the accuracy of model, there are so many ways here, we are using the confusion matrix 
+and AUC </p>
+
+<p>compute the <em>confusion matrix</em> for negative:</p>
+
+<pre><code class="r">cmat_RFN &lt;- table(testSparseNegative$Negative, predictRFN)
+cmat_RFN 
+</code></pre>
+
+<pre><code>##        predictRFN
+##         FALSE TRUE
+##   FALSE   296    4
+##   TRUE     26   29
+</code></pre>
+
+<pre><code class="r">accu_RFN &lt;- (cmat_RFN[1,1] + cmat_RFN[2,2])/sum(cmat_RFN)
+</code></pre>
+
+<p>compute the <em>confusion matrix</em> for positive:</p>
+
+<pre><code class="r">cmat_RFP &lt;- table(testSparsePositive$Positive, predictRFP)
+cmat_RFP 
+</code></pre>
+
+<pre><code>##        predictRFP
+##         FALSE TRUE
+##   FALSE   335    0
+##   TRUE     18    2
+</code></pre>
+
+<pre><code class="r">accu_RFP &lt;- (cmat_RFP[1,1] + cmat_RFP[2,2])/sum(cmat_RFP)
+</code></pre>
+
+<p>The overall <strong>accuracy</strong> of this <em>Random Forest</em> model is <strong>0.9155</strong> for the <strong>Negative</strong> and <strong>0.9493</strong> for the <strong>Positive</strong> sentiment.<br/>
+This model is a <strong>little better than the CART model</strong>, but due to the <strong>interpretability of the CART model</strong>,
+this latter would probably be preferred over the random forest model.</p>
+
+<p>If you were to use <strong>cross-validation to pick</strong> the <code>cp</code> parameter for the <em>CART model</em>, the accuracy
+would increase to about the same as the random forest model.</p>
+
+<p>So by using a bag-of-words approach and these models, we can reasonably predict sentiment even
+with a relatively small data set of tweets.</p>
+
+<h1>Logistic Regression Model</h1>
+
+<h4>Comparison with <em>logistic regression</em> model</h4>
+
+<p>we are creating a logistic regression model called as <strong>tweetLogN</strong> for <strong>Negative</strong> and <strong>tweetLogP</strong> for the <strong>Positive</strong>, for logistic regression we use function <strong>glm</strong> with family binomial.</p>
+
+<p>Build the model for the <strong>Negative</strong> sentiment, using all independent variables as predictors:</p>
+
+<pre><code class="r">tweetLogN &lt;- glm(Negative ~ . , data = trainSparseNegative, family = &quot;binomial&quot;)
+</code></pre>
+
+<pre><code>## Warning: glm.fit: algorithm did not converge
+</code></pre>
+
+<pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+</code></pre>
+
+<pre><code class="r"># summary(tweetLogN)
+</code></pre>
+
+<p>Build the model for the <strong>Positive</strong> sentiment, using all independent variables as predictors:</p>
+
+<pre><code class="r">tweetLogP &lt;- glm(Positive ~ . , data = trainSparsePositive, family = &quot;binomial&quot;)
+</code></pre>
+
+<pre><code>## Warning: glm.fit: algorithm did not converge
+</code></pre>
+
+<pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+</code></pre>
+
+<pre><code class="r"># summary(tweetLogP)
+</code></pre>
+
+<h1>ACCURACY</h1>
+
+<p>Prediction the accuracy of this model on the testing set for negative:</p>
+
+<pre><code class="r">tweetLog_predict_testN &lt;- predict(tweetLogN, type = &quot;response&quot;, newdata = testSparseNegative)
+</code></pre>
+
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
+## ifelse(type == : prediction from a rank-deficient fit may be misleading
+</code></pre>
+
+<p>Prediction the accuracy of this model on the testing set for positive:</p>
+
+<pre><code class="r">tweetLog_predict_testP &lt;- predict(tweetLogP, type = &quot;response&quot;, newdata = testSparsePositive)
+</code></pre>
+
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
+## ifelse(type == : prediction from a rank-deficient fit may be misleading
+</code></pre>
+
+<p>Confusion matrix for negative with threshold more then 0.5:</p>
+
+<pre><code class="r">cmat_logRegrN &lt;- table(testSparseNegative$Negative, tweetLog_predict_testN &gt; 0.5)
+cmat_logRegrN
+</code></pre>
+
+<pre><code>##        
+##         FALSE TRUE
+##   FALSE   280   20
+##   TRUE     21   34
+</code></pre>
+
+<pre><code class="r">accu_logRegrN &lt;- (cmat_logRegrN[1,1] + cmat_logRegrN[2,2])/sum(cmat_logRegrN)
+</code></pre>
+
+<p>Confusion matrix for positive with threshold more then 0.5:</p>
+
+<pre><code class="r">cmat_logRegrP &lt;- table(testSparsePositive$Positive, tweetLog_predict_testP &gt; 0.5)
+cmat_logRegrP
+</code></pre>
+
+<pre><code>##        
+##         FALSE TRUE
+##   FALSE   313   22
+##   TRUE      4   16
+</code></pre>
+
+<pre><code class="r">accu_logRegrP &lt;- (cmat_logRegrP[1,1] + cmat_logRegrP[2,2])/sum(cmat_logRegrP)
+</code></pre>
+
+<h3>The Perils of Over-fitting</h3>
+
+<p>The overall <strong>accuracy</strong> of this <em>logistic regression</em> model is <strong>0.8845</strong> for <strong>Negative</strong>  and __ 0.9268__ for <strong>Positive</strong> sentiment </p>
+
+<p>which is <strong>worse than the baseline (?!)</strong>.    </p>
+
+<p>If you were to compute the accuracy on the training set instead, you would see that the model does
+really well on the training set.<br/>
+This is an example of <strong>over-fitting</strong>. The model fits the training set really well, but does not
+perform well on the test set. 
+A <strong>logistic regression model with a large number of variables is particularly at risk for overfitting</strong>.</p>
+
+<hr/>
+
+<h2>THE ANALYTICS EDGE</h2>
+
+<ul>
+<li>Analytical sentiment analysis can replace more labor-intensive methods like polling.</li>
+<li>Text analytics can deal with the massive amounts of unstructured data being generated on the internet.</li>
+<li>Computers are becoming more and more capable of interacting with humans and performing human tasks.</li>
+</ul>
+
+<hr/>
+
+</body>
+
+</html>
