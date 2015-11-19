@@ -1,0 +1,395 @@
+
+#   Predicting Ebay Sales
+###  Reproducible notes for Predicting Ebay Sales
+
+#            Anil Kumar  IIT Madras
+
+
+
+## [[source files available on GitHub](https://github.com/anilcs13m)]]
+## [[connect on linkedin]](https://in.linkedin.com/in/anilcs13m)]]
+
+
+#  PRELIMINARIES
+
+Load the library that are required in the assignment:
+```{r load_packages, cache = FALSE, echo = TRUE, message = FALSE, warning = FALSE, tidy = FALSE}
+library("tm")
+library("SnowballC")
+
+library("caTools")
+library("rpart")
+library("rpart.plot")
+library("ROCR")
+library("randomForest")
+library("e1071")
+
+```
+
+# PREDICTING SALES ON EBAY
+
+Individuals selling used items are often faced with a difficult choice -- should they try to sell the items through 
+a yard/estate sale, a consignment shop, an auction, or some other means? Often, this choice will come down to the convenience 
+of selling the items, the price the items can fetch, and the speed with which the items can be sold.
+
+To determine whether analytics can be used to help make this choice, we will look at whether data from previous auctions on eBay,
+a major online auction and shopping site, can be used to predict whether a new item will be sold at some target price.
+We will limit our attention to Christian Louboutin shoes, using data from nearly 4,000 auctions from late 2014.
+In this analysis, the dependent variable will be the binary outcome variable sold, which takes value 1 if the item was sold and 0 
+if it was not sold. We also include saleprice, which is the price the shoe sold at (NA for shoes that did not sell).
+For each item, the file ebay.csv contains the following independent variables:
+## Variables 
+
+* biddable: Whether this is an auction (biddable=1) or a sale with a fixed price (biddable=0)
+* startprice: The start price (in US Dollars) for the auction (if biddable=1) or the sale price (if biddable=0)
+* condition: The condition of the shoe (New with box, New with defects, New without box, or Pre-owned)
+* size: The size of the shoe (converted to US shoe sizes)
+* heel: The size of the heel (Flat, Low, Medium, High)
+* style: The style of the shoe (Open Toe, Platform, Pump, Slingback, Stiletto, or Other/Missing)
+* color: The color of the shoe (Beige, Black, Brown, Red, or Other/Missing)
+* material: The material of the shoe (Leather, Patent Leather, Satin, Snakeskin, Suede, or Other/Missing)
+* snippit: A short snippit of text describing the shoe
+* description: A long text description describing the shoe
+
+
+
+### Using __Text__ as data  
+
+Using data as a data is a difficult task, as text data is not structured as accoring to the requirement and not well written, use of the symbol and other symbolic representation make text analytics more difficult. so handling text data is a challenging problem.
+So for this field is called Natural Language Processing comes, goal of NLP is to understand and derive meaning from
+human language in a meaning full way so that machine can understand.
+
+
+
+
+
+### Preprocessing of data
+
+Text data often has many inconsistencies that will cause algorithms trouble
+like: Apple, apple and aPple in the text data should we consider as a single word, not multiple words as text data is releted with the apple company only. So for this we diffirent preprocessing techniq to over come such problems, related to the text data.
+
+Here are some of the following steps that we will cover presentation:
+
+ * change all the words in words in lower or upper
+ * remove punctuation
+ * remove stop words
+ * stemming
+
+
+
+
+## LOADING AND PROCESSING DATA
+
+We can see what proportion of sold is these by usign the table command
+
+```{r load_data}
+eBay <- read.csv("ebay.csv", stringsAsFactors = FALSE)
+table(eBay$sold)
+```
+__Note__: when working on a text data we add `stringsAsFactors = FALSE`, as an argument.
+
+Explore the structure of our data: 
+
+```{r check_data}
+str(eBay)
+```
+
+We have __`r nrow(eBay)`__ observations of __`r ncol(eBay)`__ variables:
+
+For Finding any missing values in the variables we can use __summary__ function from __R__:
+```{r summary1}
+summary(eBay)
+```
+what is the most common shoe size in the dataset, this can be done by using the sort of the table of size 
+```{r size}
+sort(table(eBay$size))
+```
+# CONVERTING VARIABLES TO FACTORS
+We are converting variables to factor variables, as some of the model required dependent variable to be factor variable like random forest requires for classification.
+
+```{r factor}
+eBay$sold = as.factor(eBay$sold)
+eBay$condition = as.factor(eBay$condition)
+eBay$heel = as.factor(eBay$heel)
+eBay$style = as.factor(eBay$style)
+eBay$color = as.factor(eBay$color)
+eBay$material = as.factor(eBay$material)
+```
+
+Now Let's build model by using using __eBay__ dataframe, but before building this model we need to split data into training 
+and testing set, this can be done by using the __sample.split__ function in __R__.
+In this spliting we are using 70% of the data as the training data and rest of data as the test data.
+
+```{r split}
+set.seed(144)
+spl = sample.split(eBay$sold, 0.7)
+```
+# Train and Test Data
+```{r train_test}
+training = subset(eBay, spl==TRUE)
+testing = subset(eBay, spl==FALSE)
+```
+# Build Model
+We are building logistic regression model using independent variables "biddable", "startprice", "condition", "heel", "style", "color",
+and "material", using the training set to obtain the model:
+
+logistic regression model set family as binomial:
+```{r glm}
+model = glm(sold ~ biddable+startprice+condition+heel+style+color+material, data=training, family="binomial")
+summary(model)
+```
+# prediction 
+For prediction we use the command __predict__, probability threshold of 0.5,
+
+```{r predict}
+pred = predict(model, newdata = testing, type = "response")
+table(pred >= 0.5)
+table(testing$sold,pred>=0.5)
+table(testing$sold)
+```
+# COMPUTING TEST-SET AUC
+```{r AUC}
+ROCRpred = prediction(pred,testing$sold)
+as.numeric(performance(ROCRpred,"auc")@y.values)
+```
+# PLOT ROC
+Plotting the ROC curve for the model's performance 
+```{r plot_AUC}
+ROCRperf = performance(ROCRpred,"tpr","fpr")
+plot(ROCRperf,colorize=TRUE)
+```
+# CROSS-VALIDATION TO SELECT PARAMETERS
+### TRAIN CART MODEL
+
+```{r cv_parameters}
+set.seed(144)
+numFolds = trainControl(method="cv",number=10)
+cpGrid = expand.grid(.cp=seq(0.001,0.05,0.001))
+train(sold~biddable+startprice+condition+ heel+ style+ color+material ,data=training,method="rpart",trControl=numFolds,tuneGrid=cpGrid)
+cart = rpart(sold~biddable+startprice+condition+ heel+ style+ color+material ,data=training,method="class",cp=0.006)
+prp(cart)
+```
+
+
+## CREATING A CORPUS
+
+One of fundamental concepts in text analysis, implemented in the package `tm` as well, 
+is that of a __corpus__.    
+A __corpus is a collection of documents__.
+
+We will need to convert our text to a corpus for pre-processing. 
+Various function in the `tm` package can be used to create a corpus in many different ways.    
+
+
+```{r create_corpus}
+corpus=Corpus(VectorSource(eBay$description))
+```
+
+Let's check out our corpus:
+```{r check_corpus}
+corpus
+```
+
+### Pre-processing steps 
+   
+To deal with text data following pre-processing is required. 
+
+Follow the standard steps to build and pre-process the corpus:
+
+	1) Build a new corpus variable called corpus.
+
+	2) Using tm_map, convert the text to lowercase.
+
+	3) Using tm_map, remove all punctuation from the corpus.
+
+	4) Using tm_map, remove all English stopwords from the corpus.
+
+	5) Using tm_map, stem the words in the corpus.
+
+	6) Build a document term matrix from the corpus, called dtm.
+
+Each operation, like stemming or removing stop words, can be done with one line in R,  
+where we use the `tm_map()` function which takes as
+
+* its first argument the name of a __corpus__ and 
+* as second argument a __function performing the transformation__ that we want to apply to the text.
+
+First step is to transform all text _to lower case_:
+
+```{r process_tolower}
+corpus <- tm_map(corpus, tolower)
+```
+
+After performing the first step we can check the same "documents" as before:
+and we can see that there is no word present in the tweet having upper case character:
+
+```{r check_corpus_after_tolower}
+corpus[[1]]
+```
+### Plain Text Document
+
+converts corpus to a Plain Text Document
+
+```{r process_to_plain_text}
+corpus <- tm_map(corpus, PlainTextDocument)
+```
+
+### Removing punctuation
+
+```{r process_remove_punctuation}
+corpus <- tm_map(corpus, removePunctuation)
+```
+### Stop Words
+
+Look at stop words 
+```{r stop_words}
+stopwords("english")[1:10]
+```
+Stop words are the words that having no meaning or very less meaning in the corpus, 
+so we remove those words which caring less meaning for our corpus
+
+
+
+Removing words can be done with the `removeWords` argument to the `tm_map()` function, with an
+extra argument, _i.e._ what the stop words are that we want to remove.  
+
+```{r process_remove_stopwords}
+corpus <- tm_map(corpus, removeWords, stopwords("english"))
+```
+
+Now check out our corpus
+```{r check_corpus_after_removing_stopwords}
+corpus[[1]]
+```
+
+### Stemming
+
+Lastly, we want to stem our document with the `stemDocument` argument.
+
+```{r process_stemming}
+corpus <- tm_map(corpus, stemDocument)
+```
+
+```{r check_corpus_after_stemming}
+corpus[[1]]
+```
+## BAG OF WORDS IN R
+
+### Create a _Document Term Matrix_
+
+We are now ready to extract the __word frequencies__ to be used in our prediction problem.
+The `tm` package provides a function called `DocumentTermMatrix()` that generates a __matrix__ where:
+
+* the __rows__ correspond to __documents__, in our case , and 
+* the __columns__ correspond to __words__ .
+
+The values in the matrix are the number of times that word appears in each document.
+
+```{r create_DTM}
+DTM <- DocumentTermMatrix(corpus)
+```
+
+```{r check_DRM}
+DTM
+```
+
+We see that in the corpus there are __`r DTM$ncol`__ __unique words__.
+
+Let's see what this matrix looks like using the `inspect()` function, in particular
+slicing a block of rows/columns from the _Document Term Matrix_ by calling by their indices:
+```{r check_frequencies}
+inspect(DTM[1:10, 1:10])
+```
+## inspect __DTM__
+```{r inspect}
+#inspect(DTM)
+```
+
+
+### Remove sparse terms
+
+Therefore let's remove some terms that don't appear very often. 
+```{r remove_sparse_terms}
+sparse_DTM <- removeSparseTerms(DTM, 0.9)
+```
+This function takes a second parameters, the __sparsity threshold__.
+The sparsity threshold works as follows.
+
+* If we say 0.98, this means to only keep terms that appear in 2% or more .
+* If we say 0.99, that means to only keep terms that appear in 1% or more .
+* If we say 0.995, that means to only keep terms that appear in 0.5% or more, 
+ 
+
+Let's see what the new _Document Term Matrix_ properties look like:
+```{r check_after_removing_sparse_terms}
+sparse_DTM
+```
+It only contains __`r sparse_DTM$ncol`__ unique terms, _i.e._ only about 
+__`r round(100*sparse_DTM$ncol/DTM$ncol,1)`%__ of the full set.
+
+
+### Convert the DTM to a data frame
+
+Now let's convert the sparse matrix into a data frame that we will be able to use for our
+predictive models.
+```{r convert_DTM_to_DF}
+eBaySparse <- as.data.frame(as.matrix(sparse_DTM))
+```
+## Summary
+```{r summary}
+summary(colSums(eBaySparse))
+```
+### Fix variables names in the data frame
+
+To make all variable names _R-friendly_ use:
+```{r fix_variable_names}
+names(eBaySparse) <- paste0("D",colnames(eBaySparse))
+```
+
+
+## Add the _dependent_ variable
+
+```{r add_dependent_variable1}
+eBaySparse$sold <- eBay$sold
+eBaySparse$biddable <- eBay$biddable
+eBaySparse$startprice <- eBay$startprice
+eBaySparse$condition <- eBay$condition
+eBaySparse$heel <- eBay$heel
+eBaySparse$style <- eBay$style
+eBaySparse$color <- eBay$color
+eBaySparse$material <- eBay$material
+```
+
+# BUILDING MACHINE LEARNING MODEL
+Before Building the machine learning model, we need to split our data in training and training dataset
+
+### Split data in training/testing sets
+
+Let's split our data into a training set and a testing set
+
+```{r split_train_test}
+trainText <- subset(eBaySparse, spl == TRUE)
+testText <- subset(eBaySparse, spl == FALSE)
+```
+# TRAINING LOGISTIC REGRESSION MODEL
+```{r another}
+glmText <- glm(sold~., data = trainText, family = binomial)
+glmText_pred <- predict(glmText, newdata = testText, type = "response")
+```
+# EVALUATE
+
+```{r evaluate}
+predROCR <- prediction(predictions = glmText_pred, labels = testText$sold)
+perf = performance(predROCR,"tpr","fpr")
+plot(perf)
+as.numeric(performance(predROCR, "auc")@y.values)
+```
+# ON TRAINING SET
+
+```{r training}
+glmText_train <- predict(glmText, type = "response")
+predROCR1 <- prediction(predictions = glmText_train, labels = trainText$sold)
+perf = performance(predROCR1,"tpr","fpr")
+plot(perf)
+as.numeric(performance(predROCR1, "auc")@y.values)
+```
