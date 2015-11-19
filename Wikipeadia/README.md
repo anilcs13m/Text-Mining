@@ -1,4 +1,4 @@
-# this contain code and web presentation for DETECTING VANDALISM ON WIKIPEDIA
+# DETECTING VANDALISM ON WIKIPEDIA
 
 One of the consequences of being editable by anyone is that some people vandalize pages. This can take the form of
 removing content, adding promotional or inappropriate content, or more subtle shifts that change the meaning of the
