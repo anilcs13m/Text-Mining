@@ -14,3 +14,11 @@ and here is the presentation <a href="https://rpubs.com/anilcs13m/126406" target
 Twitter Sentiment Analysis
 ~~~
 Here is Web presentation for this <a href="https://rpubs.com/anilcs13m/126346" target="_blank">Twitter</a>
+
+~~~
+DETECTING VANDALISM ON WIKIPEDIA
+~~~
+Here is the R code of this <a href="https://github.com/anilcs13m/Text-Mining/blob/master/Wikipeadia/vandalism_wiki.R/" target="_blank">code</a>
+
+Here is Web presentation for this <a href="http://rpubs.com/anilcs13m/127279" target="_blank">wikipedia</a>
+
